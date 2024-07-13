@@ -25,4 +25,12 @@ export const userServices = {
       },
     }).select("+password");
   },
+
+  fetchAllUsers: async () => {
+    return await User.find();
+  },
+
+  findAndDelete: async (userId) => {
+    return await User.findByIdAndDelete(userId);
+  },
 };
