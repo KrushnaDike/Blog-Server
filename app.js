@@ -16,6 +16,7 @@ import categoryRoutes from "./routes/categoryRoutes.js";
 import pagesRoutes from "./routes/pagesRoutes.js";
 import quicklinksRoutes from "./routes/quicklinksRoutes.js";
 import sliderRoutes from "./routes/sliderRoutes.js";
+import popupRoutes from "./routes/popupRoutes.js";
 
 const app = express();
 
@@ -43,6 +44,7 @@ app.use("/api/v1/category", categoryRoutes);
 app.use("/api/v1/page", pagesRoutes);
 app.use("/api/v1/quicklink", quicklinksRoutes);
 app.use("/api/v1/slider", sliderRoutes);
+app.use("/api/v1/popup", popupRoutes);
 
 export default app;
 
