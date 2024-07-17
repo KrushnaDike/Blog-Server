@@ -2,7 +2,8 @@ import { catchAsyncError } from "../middlewares/catchAsyncError.js";
 import cloudinary from "cloudinary";
 import ErrorHandler from "../utils/errorHandler.js";
 import { postServices } from "../services/postServices.js";
-const { findAllPosts, createAPost, findPost, findAndDelete } = postServices;
+const { findAllPosts, createAPost, findPost, findAndDelete, findRecentPosts } =
+  postServices;
 import getDataUri from "../utils/dataUri.js";
 
 export const getAllPosts = catchAsyncError(async (req, res, next) => {
@@ -119,5 +120,14 @@ export const updatePost = catchAsyncError(async (req, res, next) => {
     success: true,
     message: "Post updated successfully.",
     post,
+  });
+});
+
+export const getRecentPosts = catchAsyncError(async (req, res, next) => {
+  const recentPosts = await findRecentPosts();
+
+  return res.status(200).json({
+    success: true,
+    recentPosts,
   });
 });

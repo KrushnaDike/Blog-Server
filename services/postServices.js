@@ -15,6 +15,10 @@ export const postServices = {
     });
   },
 
+  findRecentPosts: async () => {
+    return await Posts.find().sort({ createdAt: -1 }).limit(4);
+  },
+
   createAPost: async (insertObj) => {
     return await Posts.create(insertObj);
   },
