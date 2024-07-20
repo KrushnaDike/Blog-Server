@@ -1,9 +1,7 @@
 import { catchAsyncError } from "../middlewares/catchAsyncError.js";
-import cloudinary from "cloudinary";
 import ErrorHandler from "../utils/errorHandler.js";
 import { pagesServices } from "../services/pagesServices.js";
 const { findAllPages, createAPage, findPage, findAndDelete } = pagesServices;
-import getDataUri from "../utils/dataUri.js";
 
 export const getAllPages = catchAsyncError(async (req, res, next) => {
   const keyword = req.query.keyword || "";

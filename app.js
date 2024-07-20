@@ -18,6 +18,7 @@ import quicklinksRoutes from "./routes/quicklinksRoutes.js";
 import sliderRoutes from "./routes/sliderRoutes.js";
 import popupRoutes from "./routes/popupRoutes.js";
 import adsRoutes from "./routes/adsRoutes.js";
+import otherRoutes from "./routes/otherRoutes.js";
 
 const app = express();
 
@@ -47,6 +48,7 @@ app.use("/api/v1/quicklink", quicklinksRoutes);
 app.use("/api/v1/slider", sliderRoutes);
 app.use("/api/v1/popup", popupRoutes);
 app.use("/api/v1/ad", adsRoutes);
+app.use("/api/v1/other", otherRoutes);
 
 export default app;
 
