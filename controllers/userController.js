@@ -1,17 +1,15 @@
 import { catchAsyncError } from "../middlewares/catchAsyncError.js";
 import ErrorHandler from "../utils/errorHandler.js";
-import getDataUri from "../utils/dataUri.js";
-import cloudinary from "cloudinary";
 import { userServices } from "../services/userServices.js";
 const { checkUserExists, createUser, findUser, fetchAllUsers, findAndDelete } =
   userServices;
 import { sendToken } from "../utils/sendToken.js";
+import { sendEmail } from "../utils/sendEmail.js";
 
 export const signup = catchAsyncError(async (req, res, next) => {
-  const { name, email, role, password } = req.body;
-  const file = req.file;
+  const { name, email, role, password, permissions } = req.body;
 
-  if (!name || !email || !password || !file) {
+  if (!name || !email || !password) {
     return next(new ErrorHandler("Please enter all required fields", 400));
   }
 
@@ -22,20 +20,27 @@ export const signup = catchAsyncError(async (req, res, next) => {
     );
   }
 
-  //   Upload file on cloudinary
-  const fileUri = getDataUri(file);
-  const myCloud = await cloudinary.v2.uploader.upload(fileUri.content);
-
   const newUser = await createUser({
     name,
     email,
     role,
     password,
-    avatar: {
-      public_id: myCloud.public_id,
-      url: myCloud.secure_url,
-    },
+    permissions,
   });
+
+  // SENDING CREDENTIALS
+  const to = email;
+  const subject = "CREDENTIALS - Ranjita's Blog";
+  const text = `Hii ${name},
+
+                Welcoming you to Ranjita's Blog, use below credentials to login at Ranjita's Blog
+
+                Email: ${email}
+                Password: ${password}
+                
+                Warning! Please don't share it with anybody keep it secret.`;
+
+  await sendEmail(to, subject, text);
 
   return res.status(200).json({
     success: true,
@@ -108,7 +113,7 @@ export const getAllUsers = catchAsyncError(async (req, res, next) => {
 });
 
 export const updateUser = catchAsyncError(async (req, res, next) => {
-  const { name, email, role } = req.body;
+  const { name, email, role, permissions } = req.body;
 
   const user = await findUser(req.userId);
   if (!user) {
@@ -127,19 +132,9 @@ export const updateUser = catchAsyncError(async (req, res, next) => {
   if (name) newUser.name = name;
   if (email) newUser.email = email;
   if (role) newUser.role = role;
+  if (permissions) newUser.permissions = permissions;
 
-  // updating thumbnailImage
-  await cloudinary.v2.uploader.destroy(newUser.avatar.public_id);
-
-  const file = req.file;
-  const fileUri = getDataUri(file);
-
-  const myCloud = await cloudinary.v2.uploader.upload(fileUri.content);
-
-  newUser.avatar.public_id = myCloud.public_id;
-  newUser.avatar.url = myCloud.secure_url;
-
-  newUser.save();
+  await newUser.save();
 
   return res.status(200).json({
     success: true,
@@ -157,13 +152,6 @@ export const deleteUser = catchAsyncError(async (req, res, next) => {
   if (user._id.toString() === req.params.userId.toString()) {
     return next(new ErrorHandler("You can't delete yourself.", 401));
   }
-
-  const newUser = await findUser(req.params.userId);
-  if (!newUser) {
-    return next(new ErrorHandler("User not found.", 401));
-  }
-
-  await cloudinary.v2.uploader.destroy(newUser.avatar.public_id);
 
   const deleteUser = await findAndDelete(req.params.userId);
   if (!deleteUser) {

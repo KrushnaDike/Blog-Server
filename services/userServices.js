@@ -6,7 +6,7 @@ export const userServices = {
   },
 
   checkUserExists: async (email) => {
-    return await User.findOne({ email }).select("+password");
+    return await User.findOne({ email }).select("+password"); 
   },
 
   deleteMe: async (userId) => {

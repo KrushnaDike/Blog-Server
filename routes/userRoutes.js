@@ -13,7 +13,7 @@ import singleUpload from "../middlewares/multer.js";
 
 export default Express.Router()
 
-  .post("/signup", singleUpload, signup)
+  .post("/signup", signup)
   .post("/login", login)
   .get("/logout", logout)
   .get("/getMyProfile", isAuthenticated, getMyProfile)
@@ -22,7 +22,6 @@ export default Express.Router()
     "/updateUser/:userId",
     isAuthenticated,
     authorizedAdmin,
-    singleUpload,
     updateUser
   )
   .delete("/deleteUser/:userId", isAuthenticated, authorizedAdmin, deleteUser);

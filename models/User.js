@@ -29,15 +29,17 @@ const userSchema = new mongoose.Schema({
     default: "user",
   },
 
-  avatar: {
-    public_id: {
-      type: String,
-      required: true,
-    },
-    url: {
-      type: String,
-      required: true,
-    },
+  permissions: {
+    type: [String],
+    enum: [
+      "Slider",
+      "PostManagement",
+      "CustomPages",
+      "Footer",
+      "UserManagement",
+      "UserMessages",
+    ],
+    default: [],
   },
 
   createdAt: {
