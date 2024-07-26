@@ -23,6 +23,11 @@ const postSchema = new mongoose.Schema({
     required: true,
   },
 
+  enquiryForm: {
+    type: Boolean,
+    default: false,
+  },
+
   metaKeywords: {
     type: String,
     required: true,

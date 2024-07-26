@@ -19,8 +19,15 @@ export const getAllPosts = catchAsyncError(async (req, res, next) => {
 });
 
 export const createPost = catchAsyncError(async (req, res, next) => {
-  const { title, category, author, content, metaKeywords, metaDescription } =
-    req.body;
+  const {
+    title,
+    category,
+    author,
+    content,
+    metaKeywords,
+    metaDescription,
+    enquiryForm,
+  } = req.body;
 
   if (
     !title ||
@@ -28,6 +35,7 @@ export const createPost = catchAsyncError(async (req, res, next) => {
     !author ||
     !content ||
     !metaKeywords ||
+    !enquiryForm ||
     !metaDescription
   ) {
     return next(new ErrorHandler("Please enter all fields", 400));
@@ -45,6 +53,7 @@ export const createPost = catchAsyncError(async (req, res, next) => {
     content,
     metaDescription,
     metaKeywords,
+    enquiryForm,
     thumbnailImage: {
       public_id: myCloud.public_id,
       url: myCloud.secure_url,
@@ -88,8 +97,15 @@ export const deletePost = catchAsyncError(async (req, res, next) => {
 });
 
 export const updatePost = catchAsyncError(async (req, res, next) => {
-  const { title, category, author, content, metaKeywords, metaDescription } =
-    req.body;
+  const {
+    title,
+    category,
+    author,
+    content,
+    metaKeywords,
+    metaDescription,
+    enquiryForm,
+  } = req.body;
 
   const post = await findPost(req.params.postId);
   if (!post) {
@@ -102,6 +118,7 @@ export const updatePost = catchAsyncError(async (req, res, next) => {
   if (content) post.content = content;
   if (metaKeywords) post.metaKeywords = metaKeywords;
   if (metaDescription) post.metaDescription = metaDescription;
+  if (enquiryForm) post.enquiryForm = enquiryForm;
 
   // updating thumbnailImage
   await cloudinary.v2.uploader.destroy(post.thumbnailImage.public_id);

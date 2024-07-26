@@ -5,7 +5,12 @@ import getDataUri from "../utils/dataUri.js";
 import ErrorHandler from "../utils/errorHandler.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import { logoServices } from "../services/logoServices.js";
+import { request } from "express";
+import Enquiry from "../models/Enquiry.js";
 const { findAllLogos, createALogo, findLogo } = logoServices;
+
+import { postServices } from "../services/postServices.js";
+const { findPost } = postServices;
 
 export const contact = catchAsyncError(async (req, res, next) => {
   const { name, email, mobile, message } = req.body;
@@ -15,7 +20,8 @@ export const contact = catchAsyncError(async (req, res, next) => {
 
   const to = process.env.MY_EMAIL;
   const subject = "Contact from Brand Liberty";
-  const text = `I am ${name} and my Email is ${email}. \n ${message}`;
+  const text = `I am ${name} and my Email is ${email}. \n 
+                Message: ${message}`;
 
   await sendEmail(to, subject, text);
   await Contact.create({ name, email, mobile, message });
@@ -23,6 +29,47 @@ export const contact = catchAsyncError(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: "Your message has been sent.",
+  });
+});
+
+export const enquiryMsg = catchAsyncError(async (req, res, next) => {
+  const { name, email, mobile, message } = req.body;
+  if (!name || !email || !message || !mobile) {
+    return next(new ErrorHandler("Please enter all fields.", 401));
+  }
+
+  const post = await findPost(req.params.postId);
+  if (!post) {
+    return next(new ErrorHandler("Post not found.", 404));
+  }
+
+  const to = process.env.MY_EMAIL;
+  const subject = `Enquiry from ${name} about ${post.name}`;
+  const text = `I am ${name} and my Email is ${email}. \n Enquiry Message: ${message}`;
+
+  await sendEmail(to, subject, text);
+  const enquiry = await Enquiry.create({
+    name,
+    email,
+    mobile,
+    message,
+    postId: post._id,
+    postName: post.title,
+  });
+
+  res.status(200).json({
+    success: true,
+    message: "Your message has been sent.",
+    enquiry,
+  });
+});
+
+export const getAllEnquiries = catchAsyncError(async (req, res, next) => {
+  const enquiries = await Enquiry.find({});
+
+  return res.status(200).json({
+    success: true,
+    enquiries,
   });
 });
 

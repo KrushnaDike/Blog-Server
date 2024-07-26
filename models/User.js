@@ -38,6 +38,7 @@ const userSchema = new mongoose.Schema({
       "Footer",
       "UserManagement",
       "UserMessages",
+      "UserEnquiries",
     ],
     default: [],
   },
