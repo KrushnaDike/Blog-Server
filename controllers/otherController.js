@@ -42,12 +42,7 @@ export const enquiryMsg = catchAsyncError(async (req, res, next) => {
   if (!post) {
     return next(new ErrorHandler("Post not found.", 404));
   }
-
-  const to = process.env.MY_EMAIL;
-  const subject = `Enquiry from ${name} about ${post.name}`;
-  const text = `I am ${name} and my Email is ${email}. \n Enquiry Message: ${message}`;
-
-  await sendEmail(to, subject, text);
+  
   const enquiry = await Enquiry.create({
     name,
     email,
@@ -56,6 +51,12 @@ export const enquiryMsg = catchAsyncError(async (req, res, next) => {
     postId: post._id,
     postName: post.title,
   });
+
+  const to = process.env.MY_EMAIL;
+  const subject = `Enquiry from ${name} about ${post.title}`;
+  const text = `I am ${name} and my Email is ${email}. \n Enquiry Message: ${message}`;
+  
+  await sendEmail(to, subject, text);
 
   res.status(200).json({
     success: true,
